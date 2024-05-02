@@ -1,5 +1,3 @@
-# Final-Portfolio
-
 **Table of Contents:**
 
 - 1. Portfolio Introduction 
