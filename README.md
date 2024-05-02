@@ -41,7 +41,7 @@
 
 **5. Analyst Resume**
 
-- There is an updated resume tailored to a position in data analytics.
+- There is an updated resume tailored to a position in data analytics: Analyst Resume.pdf
 
 **6. Citations**
 
