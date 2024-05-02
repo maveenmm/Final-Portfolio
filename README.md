@@ -1,4 +1,4 @@
-# Final-Portfolio
+# Final Portfolio
 
 **Table of Contents:**
 
@@ -40,7 +40,7 @@
 
 - The final deliverable is a cleaned slide deck containing these specified conditions.
   
-- [Preentation PDF](https://github.com/maveenmm/Final-Portfolio/blob/7548b674fb88173f3fa137403fbbd9ed4d02df27/prezgit.pdf)
+- [Presentation PDF](https://github.com/maveenmm/Final-Portfolio/blob/7548b674fb88173f3fa137403fbbd9ed4d02df27/prezgit.pdf)
 - [Presentation RMD](https://github.com/maveenmm/Final-Portfolio/blob/7548b674fb88173f3fa137403fbbd9ed4d02df27/prezgit.Rmd)
 - [Presentation R](https://github.com/maveenmm/Final-Portfolio/blob/7548b674fb88173f3fa137403fbbd9ed4d02df27/Prez%20Workspace.R)
 
