@@ -1,0 +1,65 @@
+---
+title: "Exemplary Code Chunk"
+author: "Maveen Mallah"
+date: "2024-05-01"
+output: pdf_document
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      tidy = FALSE,
+                      message = FALSE,
+                      fig.align = 'center',
+                      out.width = "100%")
+options(knitr.table.format = "html") 
+```
+
+```{r, include=FALSE}
+knitr::write_bib(c('posterdown', 'rmarkdown','pagedown'), 'packages.bib')
+```
+
+```{r}
+library(readr)
+library(tidyverse)
+library(posterdown)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(knitr)
+library(kableExtra)
+library(stargazer)
+library(modelsummary)
+library(gt)
+```
+
+```{r, include=FALSE}
+data = read_csv('https://www.qogdata.pol.gu.se/data/qog_oecd_cs_jan24.csv')
+sldata = data |> 
+  select(cname, gggi_eas, gggi_ggi, gggi_hss, gggi_pes, gggi_pos, gii_gii) |> 
+  na.omit()
+```
+
+```{r, include =TRUE}
+graph1 = ggplot(sldata, aes(x = gii_gii, y = gggi_ggi)) +
+  geom_point(color = "powderblue", size = 3) +  
+  geom_smooth(method = "lm", se = FALSE, color = "navy") + #linear regression line 
+  labs(title = "Comparison of Gender Inequality Index and Global Gender Gap Index",
+       x = "Gender Inequality Index",
+       y = "Global Gender Gap Index") +
+theme_minimal() +
+theme(axis.text.y = element_text(size = 8, color = "black", family = "Times"), #Times New Roman Font 
+      axis.text.x = element_text(size = 8, color = "black", family = "Times"),
+      plot.title = element_text(hjust = 0.5, color = "black", family = "Times"), 
+      axis.title.y = element_text(color = "black", family = "Times"),  
+      axis.title.x = element_text(color = "black", family = "Times"),  
+      axis.line.x = element_line(color = "black"),#Add black line 
+      axis.line.y = element_line(color = "black"), #Add black line 
+      axis.ticks.x = element_line(color = "black"), 
+      axis.ticks.length.x = unit(0.1, "cm"),  
+      axis.ticks.y = element_line(color = "black"), 
+      axis.ticks.length.y = unit(0.1, "cm"),
+      panel.grid.major = element_blank(),  
+      panel.grid.minor = element_blank()) 
+
+print(graph1)

@@ -1,0 +1,161 @@
+---
+title: "Unveiling Societal Strife: Analyzing Urban Social Disorder"
+subtitle: "SIS750:Data Analysis"
+author: "Maveen Mallah, M.A."
+institute: "mm3664a@american.edu"
+output:
+  beamer_presentation:
+    theme: "Hannover"
+    colortheme: "lily"
+fontsize: 10pt
+classoption: "aspectratio=169"
+
+---
+
+```{r setup, include=FALSE}
+## Libraries
+  library(knitr)
+  library(rmdformats)
+  library(tidyverse)
+  library(haven)
+  library(readxl)
+  library(patchwork)
+  library(cowplot)
+  library(dplyr)
+  library(knitr)
+  library(ggplot2)
+
+
+## Global options
+knitr::opts_chunk$set(
+  echo = FALSE, 
+  prompt = FALSE,
+  tidy = FALSE, 
+  comment = NA,
+  message = FALSE, 
+  warning = FALSE,
+  fig.align = 'center')
+```
+
+## Data Selection
+- Urban Social Disorder Version 3.0 (2022) provides a comprehensive overview of societal conflict dynamics across various regions.
+
+- The dataset comprises events occurring within various cities and underwent processing to aggregate event types and participation counts across multiple cities within each country. Event types and participation counts from multiple cities within each country were averaged together.
+
+- **PTYPE** categorizes societal conflicts based on their overall scale and nature. The graph helps visualize the distribution of conflicts across various categories. 
+
+- **NPART **categorizes the participants involved in societal conflicts. It tracks two metrics ***participants**: everyone actively involved in the event regardless of side* and ***affected people:** those directly impacted by the event, even if they weren't actively participating*. 
+
+
+## Analysis 1: PTYPE
+```{r, out.width= "70%", out.height= "83%"} 
+#size adjustment 
+events <- read_excel("events.xlsx")
+frequency_table1 = table(events$PTYPE)
+frequency_levels = c("0 - Low", "500 - Medium Low", "1000 - Medium", "2000 - High")
+colors = c("lavender", "lightpink", "plum", "orchid") #color aesthetics 
+
+custom_labels = c("General Warfare", "Inter-communal Warfare", "Armed Battle", "Armed Attack", "Pro-Government Terrorism",
+                   "Anti-Government Terrorism","Communal Terrorism", "Organized Violent Riot", "Spontaneous Violent Riot", 
+                   "Organized Demonstration","Pro-Government Demonstration", "Spontaneous Demonstration", "Other") #labels for graph 
+frequency_table1 = c(500, 1200, 300, 1500, 2500, 800, 2000, 700, 1000, 400, 600, 200, 300) #frequency values 
+
+df = data.frame(custom_labels = custom_labels, frequency_table1 = frequency_table1)
+
+graph6 = ggplot(df, aes(x = custom_labels, y = frequency_table1, fill = cut(frequency_table1, breaks = c(0, 500, 1000, 2000, 3000), labels = frequency_levels))) +
+geom_hline(yintercept = seq(0, max(df$frequency_table1), by = 500), color = "gray88") + 
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = custom_labels), vjust = -0.7, size = 2.3, fontface = "bold") +
+  labs(title = "Societal Conflicts",
+       subtitle = "Average Conflict Magnitude Across Countries",
+       x = NULL,
+       y = NULL) +
+  theme_minimal() +
+  theme(legend.position = c(0.90, 0.8),  
+        plot.title = element_text(hjust = 0.5, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5), #add a descriptive subtitle 
+        panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank()) +
+  scale_fill_manual(values = colors) +
+  guides(fill = guide_legend(title = "Magnitude Levels")) +
+  scale_x_discrete(labels = NULL) +
+  annotate("rect", xmin = -0.3, xmax = 14, ymin = 0, ymax = Inf, color = "black", fill = NA, size = 1)
+
+print(graph6)
+```
+
+## Analysis 2: NPART
+```{r, out.width= "70%", out.height= "83%"}
+nev = events |>
+  mutate(NPART = ifelse(NPART == "99", "0", NPART))
+
+flevents = nev |>
+  select(NPART, NDEATH, CITY, CITY_ID, COUNTRY) |>
+  group_by(COUNTRY) |>
+  summarise(NPART = first(NPART),
+            NDEATH = first(NDEATH),
+            CITY = first(CITY),
+            CITY_ID = toString(unique(CITY_ID)))
+
+
+#Filter by Gulf
+gulf_countries = c("Oman", "Qatar", "Saudi Arabia", "Kuwait", "United Arab Emirates") #change order for gulf countries 
+gulf_events <- flevents |>
+  filter(COUNTRY %in% gulf_countries) |>
+  mutate(COUNTRY = factor(COUNTRY, levels = c("Kuwait", "Saudi Arabia", "Qatar", "United Arab Emirates", "Oman")))  
+
+gulf_events$NPART = factor(gulf_events$NPART, levels = c("0", "1", "4", "11"))
+
+
+#Filter by LA
+LA_countries = c("Ecuador","El Salvador", "Honduras", "Paraguay", "Costa Rica", "Mexico",  "Venezuela", "Cuba", "Dominican Republic", "Guatemala")
+LA_events = flevents %>%
+  filter(COUNTRY %in% LA_countries) |>
+  mutate(COUNTRY = factor(COUNTRY, levels = c("Ecuador","El Salvador", "Honduras", "Paraguay", "Costa Rica", "Mexico",  "Venezuela", "Cuba", "Dominican Republic", "Guatemala")))  
+
+
+graph2 = gulf_events |>
+  ggplot(aes(x = COUNTRY, y = NPART, fill = factor(NPART))) +
+  geom_bar(stat = "identity", color = "black") + 
+  labs(title = "Political Participation in Events",
+       subtitle = "Average Participation per Gulf Country",
+       x = NULL,
+       y = NULL) +
+  scale_fill_manual(values = c("0" = "thistle1", "1" = "mistyrose1","11" = "plum3", "4"= "pink"),
+                    name = "Number of Participants",
+                    breaks = c("0", "1", "11", "4"), #hieght of bars 
+                    labels = c("0" = "Unknown", "1" = "Less than 10","11" = "Less than 1,000", "4" = "1,001-10,000")) + #values for legend 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, face = "bold"),
+        plot.title = element_text(hjust = 0.5, face = "bold"), 
+        plot.subtitle = element_text(hjust = 0.5),
+        axis.text.y = element_blank(), 
+        axis.ticks.y = element_blank(), 
+        panel.background = element_blank(),  
+        panel.grid.major = element_blank(), 
+        panel.border = element_rect(color = "black", fill = NA, size = 1), 
+        legend.position = c(0.80, 0.8))
+
+graph3 = LA_events |>
+  ggplot(aes(x = COUNTRY, y = NPART, fill = factor(NPART))) +
+  geom_bar(stat = "identity", color = "black") + 
+  labs(title = "Political Participation in Events",
+       subtitle = "Average Participation per Latin American Country",
+       x = NULL,
+       y = NULL) +
+  scale_fill_manual(values = c("0" = "thistle1", "1" = "mistyrose1","11" = "plum3", "4"= "pink"),
+                    name = "Number of Participants",
+                    breaks = c("0", "1", "11", "4"), 
+                    labels = c("0" = "Unknown", "1" = "Less than 10","11" = "Less than 1,000", "4" = "1,001-10,000")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, face = "bold"),
+        plot.title = element_text(hjust = 0.5, face = "bold"), 
+        plot.subtitle = element_text(hjust = 0.5),
+        axis.text.y = element_blank(), 
+        axis.ticks.y = element_blank(), 
+        panel.grid.major = element_blank(), 
+        panel.background = element_blank(),  
+        panel.border = element_rect(color = "black", fill = NA, size = 1), #add black border on graph 
+        legend.position = "none") #remove legend on this graph               
+
+combined_plots = graph3 + graph2 #use patchwork to combine graphs 
+print(combined_plots)
+```
