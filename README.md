@@ -41,7 +41,8 @@
 
 **5. Analyst Resume**
 
-- There is an updated resume tailored to a position in data analytics: Analyst Resume.pdf
+- There is an updated resume tailored to a position in data analytics
+- https://github.com/maveenmm/Final-Portfolio/blob/bb49faf6a6bea40bb8f5e44f1bc0dcf7aaefd2f3/Analyst%20Resume.pdf
 
 **6. Citations**
 
